@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hệ Thống Quản Lý Học Tập</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#4361ee',secondary:'#3f37c9'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+<style>
+:where([class^="ri-"])::before { content: "\f3c2"; }
+body {
+font-family: 'Roboto', sans-serif;
+background-color: #f9fafb;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+-webkit-appearance: none;
+margin: 0;
+}
+input[type=number] {
+-moz-appearance: textfield;
+}
+.login-bg {
+background-image: url('https://readdy.ai/api/search-image?query=A%20modern%20school%20building%20with%20clean%20architecture%2C%20bright%20classrooms%2C%20and%20a%20welcoming%20entrance.%20The%20scene%20shows%20students%20walking%20in%20the%20courtyard.%20The%20image%20has%20soft%20lighting%2C%20creating%20a%20positive%20educational%20atmosphere.%20The%20colors%20are%20predominantly%20light%20blue%20and%20white%2C%20giving%20a%20sense%20of%20clarity%20and%20focus&width=1200&height=800&seq=123456&orientation=landscape');
+background-size: cover;
+background-position: center;
+}
+.custom-switch {
+position: relative;
+display: inline-block;
+width: 44px;
+height: 24px;
+}
+.custom-switch input {
+opacity: 0;
+width: 0;
+height: 0;
+}
+.slider {
+position: absolute;
+cursor: pointer;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background-color: #ccc;
+transition: .4s;
+border-radius: 24px;
+}
+.slider:before {
+position: absolute;
+content: "";
+height: 18px;
+width: 18px;
+left: 3px;
+bottom: 3px;
+background-color: white;
+transition: .4s;
+border-radius: 50%;
+}
+input:checked + .slider {
+background-color: #4361ee;
+}
+input:checked + .slider:before {
+transform: translateX(20px);
+}
+</style>
+</head>
+<body class="min-h-screen flex flex-col">
+<div id="loginPage" class="flex flex-col min-h-screen">
+<header class="bg-white shadow-sm py-4">
+<div class="container mx-auto px-4 flex items-center">
+<div class="flex items-center">
+<span class="text-3xl font-['Pacifico'] text-primary">logo</span>
+<h1 class="ml-3 text-xl font-medium text-gray-800">Hệ Thống Quản Lý Học Tập</h1>
+</div>
+</div>
+</header>
+<main class="flex-grow flex items-center justify-center p-4 login-bg">
+<div class="bg-white/90 backdrop-blur-sm shadow-xl rounded-lg w-full max-w-md p-8">
+<div class="text-center mb-8">
+<h2 class="text-2xl font-bold text-gray-800 mb-2">Đăng Nhập</h2>
+<p class="text-gray-600">Vui lòng nhập mã số học sinh để tiếp tục</p>
+</div>
+<form id="loginForm" class="space-y-6">
+<div>
+<label for="studentId" class="block text-sm font-medium text-gray-700 mb-1">Mã số học sinh</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<div class="w-5 h-5 flex items-center justify-center text-gray-400">
+<i class="ri-user-line"></i>
+</div>
+</div>
+<input type="text" id="studentId" name="studentId" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-button text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm" placeholder="Nhập mã số học sinh (GV-001)" value="GV-001">
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center">
+<label class="custom-switch">
+<input type="checkbox" id="remember">
+<span class="slider"></span>
+</label>
+<label for="remember" class="ml-2 block text-sm text-gray-700">Ghi nhớ đăng nhập</label>
+</div>
+<a href="#" class="text-sm font-medium text-primary hover:text-primary/80">Quên mật khẩu?</a>
+</div>
+<div>
+<button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-button shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary !rounded-button whitespace-nowrap">
+Đăng Nhập
+</button>
+</div>
+<div id="errorMessage" class="hidden mt-3 text-sm text-red-600 bg-red-50 p-3 rounded-button">
+Mã số học sinh hoặc mật khẩu không chính xác. Vui lòng thử lại.
+</div>
+</form>
+</div>
+</main>
+<footer class="bg-white shadow-inner py-4">
+<div class="container mx-auto px-4">
+<div class="flex flex-col md:flex-row justify-between items-center">
+<p class="text-gray-600 text-sm">© 2025 Trường THPT Nguyễn Trãi. Tất cả quyền được bảo lưu.</p>
+<div class="flex items-center space-x-4 mt-2 md:mt-0">
+<a href="#" class="text-gray-600 hover:text-primary text-sm">Hỗ trợ</a>
+<a href="#" class="text-gray-600 hover:text-primary text-sm">Liên hệ</a>
+<a href="#" class="text-gray-600 hover:text-primary text-sm">Điều khoản</a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<div id="dashboardPage" class="hidden flex flex-col min-h-screen">
+<header class="bg-white shadow-sm py-3 border-b">
+<div class="container mx-auto px-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center">
+<span class="text-2xl font-['Pacifico'] text-primary">logo</span>
+<h1 class="ml-3 text-lg font-medium text-gray-800 hidden md:block">Hệ Thống Quản Lý Học Tập</h1>
+</div>
+<div class="flex items-center space-x-4">
+<div class="relative">
+<button id="notificationButton" class="p-1.5 rounded-full text-gray-500 hover:bg-gray-100 focus:outline-none">
+<div class="w-6 h-6 flex items-center justify-center">
+<i class="ri-notification-3-line"></i>
+</div>
+<span class="absolute top-0 right-0 h-4 w-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs">2</span>
+</button>
+</div>
+<div class="relative">
+<button id="userMenuButton" class="flex items-center space-x-2 focus:outline-none">
+<div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<i class="ri-user-line"></i>
+</div>
+<div class="hidden md:block text-left">
+<p class="text-sm font-medium text-gray-800">Nguyễn Văn An</p>
+<p class="text-xs text-gray-500">Lớp 11A1</p>
+</div>
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-arrow-down-s-line"></i>
+</div>
+</button>
+<div id="userMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
+<a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Thông tin cá nhân</a>
+<a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Đổi mật khẩu</a>
+<a href="#" id="logoutButton" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Đăng xuất</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</header>
+<main class="flex-grow bg-gray-50 py-6">
+<div class="container mx-auto px-4">
+<div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between">
+<div>
+<h2 class="text-2xl font-bold text-gray-800">Bảng Điểm Học Tập</h2>
+<p class="text-gray-600 mt-1">Xem kết quả học tập và nhận xét từ giáo viên</p>
+</div>
+<div class="mt-4 md:mt-0 flex flex-col sm:flex-row gap-3">
+<div class="relative">
+<select id="periodSelect" class="appearance-none bg-white border border-gray-300 rounded-button py-2 pl-3 pr-8 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
+<option value="month-6">Tháng 6/2025</option>
+<option value="month-5">Tháng 5/2025</option>
+<option value="month-4">Tháng 4/2025</option>
+<option value="month-3">Tháng 3/2025</option>
+<option value="semester-2">Học kỳ II (2024-2025)</option>
+<option value="semester-1">Học kỳ I (2024-2025)</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-arrow-down-s-line"></i>
+</div>
+</div>
+</div>
+<button id="exportPdfButton" class="inline-flex items-center px-4 py-2 border border-transparent rounded-button shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary !rounded-button whitespace-nowrap">
+<div class="w-5 h-5 flex items-center justify-center mr-2">
+<i class="ri-file-download-line"></i>
+</div>
+Xuất PDF
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<div class="lg:col-span-2 space-y-6">
+<div class="bg-white rounded-lg shadow-sm p-6">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-semibold text-gray-800">Bảng Điểm Tháng 6/2025</h3>
+<div class="flex items-center text-sm">
+<span class="text-gray-500 mr-2">Cập nhật:</span>
+<span class="font-medium">15/06/2025</span>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="min-w-full divide-y divide-gray-200">
+<thead>
+<tr>
+<th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Môn học</th>
+<th class="px-4 py-3 bg-gray-50 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Điểm</th>
+<th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nhận xét</th>
+</tr>
+</thead>
+<tbody class="bg-white divide-y divide-gray-200">
+<tr>
+<td class="px-4 py-4 whitespace-nowrap">
+<div class="flex items-center">
+<div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-3">
+<i class="ri-book-2-line"></i>
+</div>
+<div>
+<div class="text-sm font-medium text-gray-900">Toán học</div>
+<div class="text-xs text-gray-500">Cô Nguyễn Thị Hương</div>
+</div>
+</div>
+</td>
+<td class="px-4 py-4 whitespace-nowrap text-center">
+<span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-green-100 text-green-800">9.5</span>
+</td>
+<td class="px-4 py-4">
+<p class="text-sm text-gray-600 line-clamp-2">Học sinh xuất sắc trong việc giải quyết các bài toán phức tạp, có tư duy logic tốt và khả năng phân tích sâu sắc.</p>
+<button class="mt-1 text-xs font-medium text-primary hover:text-primary/80 focus:outline-none">Xem chi tiết</button>
+</td>
+</tr>
+<tr>
+<td class="px-4 py-4 whitespace-nowrap">
+<div class="flex items-center">
+<div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-600 mr-3">
+<i class="ri-book-2-line"></i>
+</div>
+<div>
+<div class="text-sm font-medium text-gray-900">Ngữ văn</div>
+<div class="text-xs text-gray-500">Thầy Trần Văn Minh</div>
+</div>
+</div>
+</td>
+<td class="px-4 py-4 whitespace-nowrap text-center">
+<span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">7.0</span>
+</td>
+<td class="px-4 py-4">
+<p class="text-sm text-gray-600 line-clamp-2">Cần cải thiện kỹ năng phân tích và đánh giá tác phẩm văn học, điểm sáng là phần làm văn nghị luận.</p>
+<button class="mt-1 text-xs font-medium text-primary hover:text-primary/80 focus:outline-none">Xem chi tiết</button>
+</td>
+</tr>
+<tr>
+<td class="px-4 py-4 whitespace-nowrap">
+<div class="flex items-center">
+<div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 mr-3">
+<i class="ri-book-2-line"></i>
+</div>
+<div>
+<div class="text-sm font-medium text-gray-900">Tiếng Anh</div>
+<div class="text-xs text-gray-500">Cô Lê Thị Mai</div>
+</div>
+</div>
+</td>
+<td class="px-4 py-4 whitespace-nowrap text-center">
+<span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-green-100 text-green-800">9.0</span>
+</td>
+<td class="px-4 py-4">
+<p class="text-sm text-gray-600 line-clamp-2">Học sinh có kỹ năng nghe nói tốt, cần tập trung thêm vào ngữ pháp nâng cao.</p>
+<button class="mt-1 text-xs font-medium text-primary hover:text-primary/80 focus:outline-none">Xem chi tiết</button>
+</td>
+</tr>
+<tr>
+<td class="px-4 py-4 whitespace-nowrap">
+<div class="flex items-center">
+<div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 mr-3">
+<i class="ri-book-2-line"></i>
+</div>
+<div>
+<div class="text-sm font-medium text-gray-900">Vật lý</div>
+<div class="text-xs text-gray-500">Thầy Phạm Văn Đức</div>
+</div>
+</div>
+</td>
+<td class="px-4 py-4 whitespace-nowrap text-center">
+<span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-green-100 text-green-800">8.0</span>
+</td>
+<td class="px-4 py-4">
+<p class="text-sm text-gray-600 line-clamp-2">Hiểu rõ các nguyên lý cơ bản, cần làm thêm bài tập ứng dụng để nâng cao kỹ năng giải quyết vấn đề.</p>
+<button class="mt-1 text-xs font-medium text-primary hover:text-primary/80 focus:outline-none">Xem chi tiết</button>
+</td>
+</tr>
+<tr>
+<td class="px-4 py-4 whitespace-nowrap">
+<div class="flex items-center">
+<div class="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600 mr-3">
+<i class="ri-book-2-line"></i>
+</div>
+<div>
+<div class="text-sm font-medium text-gray-900">Hóa học</div>
+<div class="text-xs text-gray-500">Cô Đỗ Thị Hà</div>
+</div>
+</div>
+</td>
+<td class="px-4 py-4 whitespace-nowrap text-center">
+<span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">7.5</span>
+</td>
+<td class="px-4 py-4">
+<p class="text-sm text-gray-600 line-clamp-2">Cần cải thiện phần hóa hữu cơ, thực hành thí nghiệm tốt.</p>
+<button class="mt-1 text-xs font-medium text-primary hover:text-primary/80 focus:outline-none">Xem chi tiết</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="mt-6 pt-4 border-t border-gray-200">
+<div class="flex items-center justify-between">
+<div>
+<p class="text-sm font-medium text-gray-700">Điểm trung bình tháng:</p>
+<p class="text-2xl font-bold text-primary">9.2</p>
+</div>
+<div class="text-right">
+<p class="text-sm font-medium text-gray-700">Xếp loại:</p>
+<p class="text-lg font-semibold text-green-600">Xuất sắc</p>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white rounded-lg shadow-sm p-6">
+<h3 class="text-lg font-semibold text-gray-800 mb-4">Nhận Xét Chi Tiết</h3>
+<div id="feedbackAccordion">
+<div class="border rounded-lg mb-3 overflow-hidden">
+<button class="w-full flex items-center justify-between p-4 focus:outline-none bg-gray-50" data-subject="math">
+<div class="flex items-center">
+<div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-3">
+<i class="ri-book-2-line"></i>
+</div>
+<span class="font-medium text-gray-800">Toán học</span>
+</div>
+<div class="w-5 h-5 flex items-center justify-center text-gray-500">
+<i class="ri-arrow-down-s-line"></i>
+</div>
+</button>
+<div class="p-4 border-t border-gray-200 hidden" id="math-feedback">
+<div class="space-y-4">
+<div>
+<h4 class="text-sm font-medium text-gray-700 flex items-center">
+<div class="w-5 h-5 flex items-center justify-center text-green-500 mr-1">
+<i class="ri-checkbox-circle-line"></i>
+</div>
+Ưu điểm
+</h4>
+<ul class="mt-2 pl-6 text-sm text-gray-600 space-y-1 list-disc">
+<li>Nắm vững kiến thức cơ bản về giải tích</li>
+<li>Khả năng tư duy logic tốt</li>
+<li>Hoàn thành đầy đủ bài tập về nhà</li>
+</ul>
+</div>
+<div>
+<h4 class="text-sm font-medium text-gray-700 flex items-center">
+<div class="w-5 h-5 flex items-center justify-center text-red-500 mr-1">
+<i class="ri-error-warning-line"></i>
+</div>
+Nhược điểm
+</h4>
+<ul class="mt-2 pl-6 text-sm text-gray-600 space-y-1 list-disc">
+<li>Còn lúng túng trong phần hình học không gian</li>
+<li>Đôi khi thiếu kiên nhẫn khi giải các bài toán phức tạp</li>
+</ul>
+</div>
+<div>
+<h4 class="text-sm font-medium text-gray-700 flex items-center">
+<div class="w-5 h-5 flex items-center justify-center text-blue-500 mr-1">
+<i class="ri-lightbulb-line"></i>
+</div>
+Đề xuất cải thiện
+</h4>
+<ul class="mt-2 pl-6 text-sm text-gray-600 space-y-1 list-disc">
+<li>Làm thêm bài tập về hình học không gian</li>
+<li>Tham gia nhóm học thêm vào chiều thứ 4</li>
+<li>Ôn tập lại phần lượng giác và đạo hàm</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="border rounded-lg mb-3 overflow-hidden">
+<button class="w-full flex items-center justify-between p-4 focus:outline-none bg-gray-50" data-subject="literature">
+<div class="flex items-center">
+<div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-600 mr-3">
+<i class="ri-book-2-line"></i>
+</div>
+<span class="font-medium text-gray-800">Ngữ văn</span>
+</div>
+<div class="w-5 h-5 flex items-center justify-center text-gray-500">
+<i class="ri-arrow-down-s-line"></i>
+</div>
+</button>
+<div class="p-4 border-t border-gray-200 hidden" id="literature-feedback">
+<div class="space-y-4">
+<div>
+<h4 class="text-sm font-medium text-gray-700 flex items-center">
+<div class="w-5 h-5 flex items-center justify-center text-green-500 mr-1">
+<i class="ri-checkbox-circle-line"></i>
+</div>
+Ưu điểm
+</h4>
+<ul class="mt-2 pl-6 text-sm text-gray-600 space-y-1 list-disc">
+<li>Khả năng viết văn nghị luận tốt</li>
+<li>Có vốn từ phong phú</li>
+<li>Tham gia tích cực trong các hoạt động thảo luận</li>
+</ul>
+</div>
+<div>
+<h4 class="text-sm font-medium text-gray-700 flex items-center">
+<div class="w-5 h-5 flex items-center justify-center text-red-500 mr-1">
+<i class="ri-error-warning-line"></i>
+</div>
+Nhược điểm
+</h4>
+<ul class="mt-2 pl-6 text-sm text-gray-600 space-y-1 list-disc">
+<li>Còn hạn chế trong phân tích và đánh giá tác phẩm</li>
+<li>Đôi khi viết chưa logic, thiếu mạch lạc</li>
+</ul>
+</div>
+<div>
+<h4 class="text-sm font-medium text-gray-700 flex items-center">
+<div class="w-5 h-5 flex items-center justify-center text-blue-500 mr-1">
+<i class="ri-lightbulb-line"></i>
+</div>
+Đề xuất cải thiện
+</h4>
+<ul class="mt-2 pl-6 text-sm text-gray-600 space-y-1 list-disc">
+<li>Đọc thêm sách phê bình văn học</li>
+<li>Luyện viết theo dàn ý chi tiết hơn</li>
+<li>Tham khảo thêm các bài mẫu về phân tích tác phẩm</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="border rounded-lg overflow-hidden">
+<button class="w-full flex items-center justify-between p-4 focus:outline-none bg-gray-50" data-subject="english">
+<div class="flex items-center">
+<div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 mr-3">
+<i class="ri-book-2-line"></i>
+</div>
+<span class="font-medium text-gray-800">Tiếng Anh</span>
+</div>
+<div class="w-5 h-5 flex items-center justify-center text-gray-500">
+<i class="ri-arrow-down-s-line"></i>
+</div>
+</button>
+<div class="p-4 border-t border-gray-200 hidden" id="english-feedback">
+<div class="space-y-4">
+<div>
+<h4 class="text-sm font-medium text-gray-700 flex items-center">
+<div class="w-5 h-5 flex items-center justify-center text-green-500 mr-1">
+<i class="ri-checkbox-circle-line"></i>
+</div>
+Ưu điểm
+</h4>
+<ul class="mt-2 pl-6 text-sm text-gray-600 space-y-1 list-disc">
+<li>Kỹ năng nghe và nói rất tốt</li>
+<li>Vốn từ vựng phong phú</li>
+<li>Tự tin khi giao tiếp bằng tiếng Anh</li>
+</ul>
+</div>
+<div>
+<h4 class="text-sm font-medium text-gray-700 flex items-center">
+<div class="w-5 h-5 flex items-center justify-center text-red-500 mr-1">
+<i class="ri-error-warning-line"></i>
+</div>
+Nhược điểm
+</h4>
+<ul class="mt-2 pl-6 text-sm text-gray-600 space-y-1 list-disc">
+<li>Còn mắc lỗi ngữ pháp ở cấu trúc nâng cao</li>
+<li>Cần cải thiện kỹ năng viết học thuật</li>
+</ul>
+</div>
+<div>
+<h4 class="text-sm font-medium text-gray-700 flex items-center">
+<div class="w-5 h-5 flex items-center justify-center text-blue-500 mr-1">
+<i class="ri-lightbulb-line"></i>
+</div>
+Đề xuất cải thiện
+</h4>
+<ul class="mt-2 pl-6 text-sm text-gray-600 space-y-1 list-disc">
+<li>Luyện tập thêm các dạng bài viết essay</li>
+<li>Ôn lại các cấu trúc ngữ pháp nâng cao</li>
+<li>Tham gia câu lạc bộ tiếng Anh của trường</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="space-y-6">
+<div class="bg-white rounded-lg shadow-sm p-6">
+<h3 class="text-lg font-semibold text-gray-800 mb-4">Điểm Danh</h3>
+<div class="grid grid-cols-6 gap-3">
+<div class="col-span-6">
+<div class="flex items-center justify-between mb-3">
+<p class="text-sm text-gray-600">12 ngày gần đây</p>
+<span class="text-sm font-medium text-green-600">Đi học đầy đủ: 11/12 ngày</span>
+</div>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-xs text-gray-500 mb-2">15/06</span>
+<div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+<i class="ri-check-line text-green-600"></i>
+</div>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-xs text-gray-500 mb-2">14/06</span>
+<div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+<i class="ri-check-line text-green-600"></i>
+</div>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-xs text-gray-500 mb-2">13/06</span>
+<div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+<i class="ri-check-line text-green-600"></i>
+</div>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-xs text-gray-500 mb-2">12/06</span>
+<div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center">
+<i class="ri-close-line text-red-600"></i>
+</div>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-xs text-gray-500 mb-2">11/06</span>
+<div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+<i class="ri-check-line text-green-600"></i>
+</div>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-xs text-gray-500 mb-2">10/06</span>
+<div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+<i class="ri-check-line text-green-600"></i>
+</div>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-xs text-gray-500 mb-2">09/06</span>
+<div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+<i class="ri-check-line text-green-600"></i>
+</div>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-xs text-gray-500 mb-2">08/06</span>
+<div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+<i class="ri-check-line text-green-600"></i>
+</div>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-xs text-gray-500 mb-2">07/06</span>
+<div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+<i class="ri-check-line text-green-600"></i>
+</div>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-xs text-gray-500 mb-2">06/06</span>
+<div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+<i class="ri-check-line text-green-600"></i>
+</div>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-xs text-gray-500 mb-2">05/06</span>
+<div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+<i class="ri-check-line text-green-600"></i>
+</div>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-xs text-gray-500 mb-2">04/06</span>
+<div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+<i class="ri-check-line text-green-600"></i>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white rounded-lg shadow-sm p-6">
+<h3 class="text-lg font-semibold text-gray-800 mb-4">Tiến Độ Học Tập</h3>
+<div id="progressChart" class="w-full h-64"></div>
+</div>
+<div class="bg-white rounded-lg shadow-sm p-6">
+<h3 class="text-lg font-semibold text-gray-800 mb-4">So Sánh Điểm Số</h3>
+<div id="comparisonChart" class="w-full h-64"></div>
+</div>
+<div class="bg-white rounded-lg shadow-sm p-6">
+<h3 class="text-lg font-semibold text-gray-800 mb-4">Thông Báo</h3>
+<div class="space-y-4">
+<div class="flex items-start p-3 bg-blue-50 rounded-lg">
+<div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-3 mt-0.5 flex-shrink-0">
+<i class="ri-notification-3-line"></i>
+</div>
+<div>
+<p class="text-sm font-medium text-gray-800">Cập nhật điểm Toán học</p>
+<p class="text-xs text-gray-600 mt-1">Điểm kiểm tra 15 phút đã được cập nhật. Xem ngay!</p>
+<p class="text-xs text-gray-500 mt-1">15/06/2025 - 10:30</p>
+</div>
+</div>
+<div class="flex items-start p-3 bg-green-50 rounded-lg">
+<div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 mr-3 mt-0.5 flex-shrink-0">
+<i class="ri-notification-3-line"></i>
+</div>
+<div>
+<p class="text-sm font-medium text-gray-800">Nhận xét mới từ giáo viên</p>
+<p class="text-xs text-gray-600 mt-1">Giáo viên Tiếng Anh đã thêm nhận xét mới. Xem ngay!</p>
+<p class="text-xs text-gray-500 mt-1">14/06/2025 - 15:45</p>
+</div>
+</div>
+<div class="flex items-start p-3 bg-gray-50 rounded-lg">
+<div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 mr-3 mt-0.5 flex-shrink-0">
+<i class="ri-notification-3-line"></i>
+</div>
+<div>
+<p class="text-sm font-medium text-gray-800">Lịch kiểm tra tháng 7</p>
+<p class="text-xs text-gray-600 mt-1">Lịch kiểm tra tháng 7 đã được cập nhật. Xem ngay!</p>
+<p class="text-xs text-gray-500 mt-1">12/06/2025 - 09:15</p>
+</div>
+</div>
+</div>
+<button class="w-full mt-4 text-sm font-medium text-primary hover:text-primary/80 focus:outline-none">
+Xem tất cả thông báo
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class="bg-white shadow-inner py-4 mt-8">
+<div class="container mx-auto px-4">
+<div class="flex flex-col md:flex-row justify-between items-center">
+<p class="text-gray-600 text-sm">© 2025 Trường THPT Nguyễn Trãi. Tất cả quyền được bảo lưu.</p>
+<div class="flex items-center space-x-4 mt-2 md:mt-0">
+<a href="#" class="text-gray-600 hover:text-primary text-sm">Hỗ trợ</a>
+<a href="#" class="text-gray-600 hover:text-primary text-sm">Liên hệ</a>
+<a href="#" class="text-gray-600 hover:text-primary text-sm">Điều khoản</a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const loginForm = document.getElementById('loginForm');
+  const errorMessage = document.getElementById('errorMessage');
+  const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTjCkotqRypsw_i7NOszVqJzbCgsHH1ZBw6NYDXtNmwzksna3lwWfFh1eAubaEuRalQ1Qi6SKiS3NiS/pub?output=csv';
+
+  loginForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    const studentId = document.getElementById('studentId').value.trim();
+    Papa.parse(SHEET_URL, {
+      download: true,
+      header: true,
+      complete: function (results) {
+        const data = results.data;
+        const studentRows = data.filter(row => row["Mã học sinh"] === studentId);
+        if (studentRows.length === 0) {
+          errorMessage.classList.remove('hidden');
+          return;
+        }
+        errorMessage.classList.add('hidden');
+        document.getElementById('loginPage').classList.add('hidden');
+        document.getElementById('dashboardPage').classList.remove('hidden');
+
+        const student = {
+          name: studentRows[0]["Họ tên"],
+          class: studentRows[0]["Lớp"],
+          subjects: studentRows.map(row => ({ 
+            name: row["Môn học"],
+            teacher: row["Giáo viên"],
+            grade: parseFloat(row["Điểm"]),
+            comment: row["Nhận xét"]
+          }))
+        };
+
+        document.querySelector('#userMenuButton .text-sm').textContent = student.name;
+        document.querySelector('#userMenuButton .text-xs').textContent = `Lớp ${student.class}`;
+
+        const tbody = document.querySelector('table tbody');
+        tbody.innerHTML = student.subjects.map(subject => `
+          <tr>
+            <td class="px-4 py-4 whitespace-nowrap">
+              <div class="flex items-center">
+                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-3">
+                  <i class="ri-book-2-line"></i>
+                </div>
+                <div>
+                  <div class="text-sm font-medium text-gray-900">${subject.name}</div>
+                  <div class="text-xs text-gray-500">${subject.teacher}</div>
+                </div>
+              </div>
+            </td>
+            <td class="px-4 py-4 whitespace-nowrap text-center">
+              <span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full ${subject.grade >= 8 ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">${subject.grade}</span>
+            </td>
+            <td class="px-4 py-4">
+              <p class="text-sm text-gray-600 line-clamp-2">${subject.comment}</p>
+              <button class="mt-1 text-xs font-medium text-primary hover:text-primary/80 focus:outline-none">Xem chi tiết</button>
+            </td>
+          </tr>`).join("");
+
+        const avgGrade = (student.subjects.reduce((sum, s) => sum + s.grade, 0) / student.subjects.length).toFixed(1);
+        document.querySelector('.text-2xl.font-bold.text-primary').textContent = avgGrade;
+        document.querySelector('.text-lg.font-semibold.text-green-600').textContent =
+          avgGrade >= 9 ? 'Xuất sắc' :
+          avgGrade >= 8 ? 'Giỏi' :
+          avgGrade >= 7 ? 'Khá' :
+          avgGrade >= 5 ? 'Trung bình' : 'Yếu';
+      }
+    });
+  });
+});
+</script>
+
+<script id="dashboardScript">
+document.addEventListener('DOMContentLoaded', function() {
+// User menu toggle
+const userMenuButton = document.getElementById('userMenuButton');
+const userMenu = document.getElementById('userMenu');
+userMenuButton.addEventListener('click', function() {
+userMenu.classList.toggle('hidden');
+});
+// Close menu when clicking outside
+document.addEventListener('click', function(e) {
+if (!userMenuButton.contains(e.target) && !userMenu.contains(e.target)) {
+userMenu.classList.add('hidden');
+}
+});
+// Logout button
+const logoutButton = document.getElementById('logoutButton');
+logoutButton.addEventListener('click', function() {
+document.getElementById('dashboardPage').classList.add('hidden');
+document.getElementById('loginPage').classList.remove('hidden');
+});
+// Feedback accordion
+const accordionButtons = document.querySelectorAll('[data-subject]');
+accordionButtons.forEach(button => {
+button.addEventListener('click', function() {
+const subject = this.getAttribute('data-subject');
+const content = document.getElementById(`${subject}-feedback`);
+content.classList.toggle('hidden');
+// Update icon
+const icon = this.querySelector('i');
+if (content.classList.contains('hidden')) {
+icon.className = 'ri-arrow-down-s-line';
+} else {
+icon.className = 'ri-arrow-up-s-line';
+}
+});
+});
+});
+</script>
+<script id="chartsScript">
+document.addEventListener('DOMContentLoaded', function() {
+// Progress Chart
+const progressChart = echarts.init(document.getElementById('progressChart'));
+const progressOption = {
+animation: false,
+tooltip: {
+trigger: 'axis',
+backgroundColor: 'rgba(255, 255, 255, 0.8)',
+textStyle: {
+color: '#1f2937'
+}
+},
+legend: {
+data: ['Điểm trung bình'],
+textStyle: {
+color: '#1f2937'
+}
+},
+grid: {
+left: '3%',
+right: '4%',
+bottom: '3%',
+top: '15%',
+containLabel: true
+},
+xAxis: {
+type: 'category',
+boundaryGap: false,
+data: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6'],
+axisLine: {
+lineStyle: {
+color: '#d1d5db'
+}
+},
+axisLabel: {
+color: '#4b5563'
+}
+},
+yAxis: {
+type: 'value',
+min: 0,
+max: 10,
+axisLine: {
+lineStyle: {
+color: '#d1d5db'
+}
+},
+axisLabel: {
+color: '#4b5563'
+},
+splitLine: {
+lineStyle: {
+color: '#e5e7eb'
+}
+}
+},
+series: [
+{
+name: 'Điểm trung bình',
+type: 'line',
+stack: 'Total',
+data: [7.2, 7.5, 7.8, 7.6, 7.9, 8.0],
+smooth: true,
+symbol: 'none',
+lineStyle: {
+width: 3,
+color: 'rgba(87, 181, 231, 1)'
+},
+areaStyle: {
+color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+{
+offset: 0,
+color: 'rgba(87, 181, 231, 0.3)'
+},
+{
+offset: 1,
+color: 'rgba(87, 181, 231, 0.1)'
+}
+])
+}
+}
+]
+};
+progressChart.setOption(progressOption);
+// Comparison Chart
+const comparisonChart = echarts.init(document.getElementById('comparisonChart'));
+const comparisonOption = {
+animation: false,
+tooltip: {
+trigger: 'axis',
+backgroundColor: 'rgba(255, 255, 255, 0.8)',
+textStyle: {
+color: '#1f2937'
+}
+},
+legend: {
+data: ['Học sinh', 'Trung bình lớp'],
+textStyle: {
+color: '#1f2937'
+}
+},
+grid: {
+left: '3%',
+right: '4%',
+bottom: '3%',
+top: '15%',
+containLabel: true
+},
+xAxis: {
+type: 'category',
+data: ['Toán', 'Văn', 'Anh', 'Lý', 'Hóa'],
+axisLine: {
+lineStyle: {
+color: '#d1d5db'
+}
+},
+axisLabel: {
+color: '#4b5563'
+}
+},
+yAxis: {
+type: 'value',
+min: 0,
+max: 10,
+axisLine: {
+lineStyle: {
+color: '#d1d5db'
+}
+},
+axisLabel: {
+color: '#4b5563'
+},
+splitLine: {
+lineStyle: {
+color: '#e5e7eb'
+}
+}
+},
+series: [
+{
+name: 'Học sinh',
+type: 'bar',
+data: [8.5, 8.0, 8.5, 8.0, 8.0],
+itemStyle: {
+color: 'rgba(87, 181, 231, 1)',
+borderRadius: [4, 4, 0, 0]
+}
+},
+{
+name: 'Trung bình lớp',
+type: 'bar',
+data: [7.2, 7.5, 7.8, 7.1, 6.9],
+itemStyle: {
+color: 'rgba(141, 211, 199, 1)',
+borderRadius: [4, 4, 0, 0]
+}
+}
+]
+};
+comparisonChart.setOption(comparisonOption);
+// Resize charts when window size changes
+window.addEventListener('resize', function() {
+progressChart.resize();
+comparisonChart.resize();
+});
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTjCkotqRypsw_i7NOszVqJzbCgsHH1ZBw6NYDXtNmwzksna3lwWfFh1eAubaEuRalQ1Qi6SKiS3NiS/pub?output=csv';
+  const loginForm = document.getElementById('loginForm');
+  loginForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    const studentId = document.getElementById('studentId').value.trim();
+    Papa.parse(SHEET_URL, {
+      download: true,
+      header: true,
+      complete: function (results) {
+        const data = results.data;
+        const attendanceRows = data.filter(row => row["Mã học sinh"] === studentId && row["Ngày"]);
+        const attendanceSection = document.querySelector('.grid.grid-cols-6.gap-3');
+        if (!attendanceSection) return;
+        if (attendanceRows.length) {
+          const presentCount = attendanceRows.filter(row => row["Đi học"].toLowerCase() === 'true').length;
+          const attendanceHTML = [`
+            <div class="col-span-6">
+              <div class="flex items-center justify-between mb-3">
+                <p class="text-sm text-gray-600">Dữ liệu điểm danh từ Google Sheet</p>
+                <span class="text-sm font-medium text-green-600">Đi học: ${presentCount}/${attendanceRows.length}</span>
+              </div>
+            </div>
+          `];
+          attendanceRows.forEach(row => {
+            const date = row["Ngày"];
+            const present = row["Đi học"].toLowerCase() === 'true';
+            attendanceHTML.push(`
+              <div class="flex flex-col items-center">
+                <span class="text-xs text-gray-500 mb-2">${date}</span>
+                <div class="w-8 h-8 rounded-full ${present ? 'bg-green-100' : 'bg-red-100'} flex items-center justify-center">
+                  <i class="${present ? 'ri-check-line text-green-600' : 'ri-close-line text-red-600'}"></i>
+                </div>
+              </div>
+            `);
+          });
+          attendanceSection.innerHTML = attendanceHTML.join('');
+        }
+      }
+    });
+  });
+});
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTjCkotqRypsw_i7NOszVqJzbCgsHH1ZBw6NYDXtNmwzksna3lwWfFh1eAubaEuRalQ1Qi6SKiS3NiS/pub?output=csv';
+  const loginForm = document.getElementById('loginForm');
+  loginForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    const studentId = document.getElementById('studentId').value.trim();
+    Papa.parse(SHEET_URL, {
+      download: true,
+      header: true,
+      complete: function (results) {
+        const data = results.data;
+        const attendanceRows = data.filter(row => row["Mã học sinh"] === studentId && row["Ngày"]);
+        const attendanceSection = document.querySelector('.grid.grid-cols-6.gap-3');
+        if (!attendanceSection) return;
+        if (attendanceRows.length) {
+          const presentCount = attendanceRows.filter(row => row["Có mặt"]?.toLowerCase() === 'true').length;
+          const attendanceHTML = [`
+            <div class="col-span-6">
+              <div class="flex items-center justify-between mb-3">
+                <p class="text-sm text-gray-600">Dữ liệu điểm danh từ Google Sheet</p>
+                <span class="text-sm font-medium text-green-600">Đi học: ${presentCount}/${attendanceRows.length}</span>
+              </div>
+            </div>
+          `];
+          attendanceRows.forEach(row => {
+            const date = row["Ngày"];
+            const present = row["Có mặt"]?.toLowerCase() === 'true';
+            attendanceHTML.push(`
+              <div class="flex flex-col items-center">
+                <span class="text-xs text-gray-500 mb-2">${date}</span>
+                <div class="w-8 h-8 rounded-full ${present ? 'bg-green-100' : 'bg-red-100'} flex items-center justify-center">
+                  <i class="${present ? 'ri-check-line text-green-600' : 'ri-close-line text-red-600'}"></i>
+                </div>
+              </div>
+            `);
+          });
+          attendanceSection.innerHTML = attendanceHTML.join('');
+        }
+      }
+    });
+  });
+});
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTjCkotqRypsw_i7NOszVqJzbCgsHH1ZBw6NYDXtNmwzksna3lwWfFh1eAubaEuRalQ1Qi6SKiS3NiS/pub?output=csv';
+  const loginForm = document.getElementById('loginForm');
+  loginForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    const studentId = document.getElementById('studentId').value.trim();
+    Papa.parse(SHEET_URL, {
+      download: true,
+      header: true,
+      complete: function (results) {
+        const data = results.data;
+        const attendanceRows = data.filter(row => row["Mã học sinh"] === studentId && row["Ngày"]);
+        const attendanceSection = document.querySelector('.grid.grid-cols-6.gap-3');
+        if (!attendanceSection) return;
+        if (attendanceRows.length) {
+          const presentCount = attendanceRows.filter(row => row["Có mặt"]?.toLowerCase() === 'true').length;
+          const attendanceHTML = [`
+            <div class="col-span-6">
+              <div class="flex items-center justify-between mb-3">
+                <p class="text-sm text-gray-600">Dữ liệu điểm danh từ Google Sheet</p>
+                <span class="text-sm font-medium text-green-600">Đi học: ${presentCount}/${attendanceRows.length}</span>
+              </div>
+            </div>
+          `];
+          attendanceRows.forEach(row => {
+            const rawDate = row["Ngày"];
+            const dateObj = new Date(rawDate);
+            const date = `${dateObj.getDate()}-${dateObj.getMonth() + 1}`;
+            const present = row["Có mặt"]?.toLowerCase() === 'true';
+            attendanceHTML.push(`
+              <div class="flex flex-col items-center">
+                <span class="text-xs text-gray-500 mb-2">${date}</span>
+                <div class="w-8 h-8 rounded-full ${present ? 'bg-green-100' : 'bg-red-100'} flex items-center justify-center">
+                  <i class="${present ? 'ri-check-line text-green-600' : 'ri-close-line text-red-600'}"></i>
+                </div>
+              </div>
+            `);
+          });
+          attendanceSection.innerHTML = attendanceHTML.join('');
+        }
+      }
+    });
+  });
+});
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTjCkotqRypsw_i7NOszVqJzbCgsHH1ZBw6NYDXtNmwzksna3lwWfFh1eAubaEuRalQ1Qi6SKiS3NiS/pub?output=csv';
+
+  const loginForm = document.getElementById('loginForm');
+  loginForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    const studentId = document.getElementById('studentId').value.trim();
+
+    Papa.parse(SHEET_URL, {
+      download: true,
+      header: true,
+      complete: function (results) {
+        const data = results.data.filter(row => row["Mã học sinh"] === studentId);
+        const grouped = {};
+
+        data.forEach(row => {
+          const subject = row["Môn học"];
+          if (!grouped[subject]) {
+            grouped[subject] = {
+              diamond: [],
+              opportunity: [],
+              improvement: []
+            };
+          }
+          if (row["Kim cương"]) grouped[subject].diamond.push(row["Kim cương"]);
+          if (row["Cơ hội"]) grouped[subject].opportunity.push(row["Cơ hội"]);
+          if (row["Đề xuất cải thiện"]) grouped[subject].improvement.push(row["Đề xuất cải thiện"]);
+        });
+
+        const accordion = document.getElementById('feedbackAccordion');
+        accordion.innerHTML = Object.entries(grouped).map(([subject, values], index) => {
+          const id = subject.toLowerCase().replace(/\s+/g, '-') + '-feedback';
+          const iconColor = ['bg-blue-100 text-blue-600', 'bg-red-100 text-red-600', 'bg-purple-100 text-purple-600'][index % 3];
+          return `
+          <div class="border rounded-lg mb-3 overflow-hidden">
+            <button class="w-full flex items-center justify-between p-4 focus:outline-none bg-gray-50" data-subject="${id}">
+              <div class="flex items-center">
+                <div class="w-8 h-8 rounded-full ${iconColor} flex items-center justify-center mr-3">
+                  <i class="ri-book-2-line"></i>
+                </div>
+                <span class="font-medium text-gray-800">${subject}</span>
+              </div>
+              <div class="w-5 h-5 flex items-center justify-center text-gray-500">
+                <i class="ri-arrow-down-s-line"></i>
+              </div>
+            </button>
+            <div class="p-4 border-t border-gray-200 hidden" id="${id}">
+              <div class="space-y-4">
+                <div>
+                  <h4 class="text-sm font-medium text-gray-700 flex items-center">
+                    <div class="w-5 h-5 flex items-center justify-center text-green-500 mr-1">
+                      <i class="ri-diamond-line"></i>
+                    </div>
+                    Kim cương
+                  </h4>
+                  <ul class="mt-2 pl-6 text-sm text-gray-600 space-y-1 list-disc">
+                    ${values.diamond.map(item => `<li>${item}</li>`).join('')}
+                  </ul>
+                </div>
+                <div>
+                  <h4 class="text-sm font-medium text-gray-700 flex items-center">
+                    <div class="w-5 h-5 flex items-center justify-center text-red-500 mr-1">
+                      <i class="ri-emotion-sad-line"></i>
+                    </div>
+                    Cơ hội
+                  </h4>
+                  <ul class="mt-2 pl-6 text-sm text-gray-600 space-y-1 list-disc">
+                    ${values.opportunity.map(item => `<li>${item}</li>`).join('')}
+                  </ul>
+                </div>
+                <div>
+                  <h4 class="text-sm font-medium text-gray-700 flex items-center">
+                    <div class="w-5 h-5 flex items-center justify-center text-blue-500 mr-1">
+                      <i class="ri-lightbulb-line"></i>
+                    </div>
+                    Đề xuất cải thiện
+                  </h4>
+                  <ul class="mt-2 pl-6 text-sm text-gray-600 space-y-1 list-disc">
+                    ${values.improvement.map(item => `<li>${item}</li>`).join('')}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>`;
+        }).join('');
+
+        document.querySelectorAll('[data-subject]').forEach(button => {
+          button.addEventListener('click', function () {
+            const subjectId = this.getAttribute('data-subject');
+            const content = document.getElementById(subjectId);
+            content.classList.toggle('hidden');
+            const icon = this.querySelector('i');
+            icon.className = content.classList.contains('hidden') ? 'ri-arrow-down-s-line' : 'ri-arrow-up-s-line';
+          });
+        });
+      }
+    });
+  });
+});
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const originalHandler = document.getElementById('loginForm').onsubmit;
+  const loginForm = document.getElementById('loginForm');
+
+  loginForm.addEventListener('submit', function (e) {
+    setTimeout(() => {
+      // Xử lý bảng điểm
+      const rows = document.querySelectorAll('table tbody tr');
+      rows.forEach(row => {
+        const gradeText = row.querySelector('td:nth-child(2) span')?.textContent || "";
+        if (isNaN(parseFloat(gradeText))) {
+          row.style.display = "none";
+        }
+      });
+
+      // Xử lý phần xếp loại nếu không có môn nào
+      const visibleRows = Array.from(rows).filter(r => r.style.display !== "none");
+      if (visibleRows.length === 0) {
+        const gradeAvg = document.querySelector('.text-2xl.font-bold.text-primary');
+        const rank = document.querySelector('.text-lg.font-semibold');
+        if (gradeAvg) gradeAvg.textContent = "—";
+        if (rank) rank.textContent = "Không có dữ liệu";
+      }
+    }, 300);
+  });
+});
+</script>
+
+</body>
+</html>
